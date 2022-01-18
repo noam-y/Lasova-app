@@ -9,6 +9,7 @@ const reducer = (state = initialStore, action) => {
     console.log("isthisworking???", action.payload);
     return { ...state, volunteers: action.payload };
   }
+  // BUG- after you start searching, it runs query on offline data instead of online data.
   if (action.type === "SEARCH") {
     let newVolunteers = [...offline_data];
     newVolunteers = newVolunteers.filter((volunteer) => {
