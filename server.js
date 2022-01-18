@@ -67,7 +67,7 @@ app.get('/createvolunteer', (req,res) =>{
 
 // this function is used to illustrate how you can create a volunteer.
 app.get('/newvolunteer', (req,res) => {
-  let post = {taz: "308786284", first_name: "יוליה", last_name: "צמח", police_certification: "TRUE", other_certications: "TRUE", cellphone: "0547371762", email: "tapuz123@lasova.com", home_adress:"Yulia street apt 20", volunteer_type: "1", year_joined:"2015", gender:"2"}
+  let post = {taz: "322186284", first_name: "אורן", last_name: "קורן", police_certification: "FALSE", other_certications: "TRUE", cellphone: "0547457862", email: "tap325123@lasova.com", home_adress:" oren street apt 20", volunteer_type: "1", year_joined:"2015", gender:"1"}
   let sql = 'INSERT INTO volunteers SET ?'
   let query = db.query(sql, post, err =>{
     if(err) {
@@ -89,6 +89,21 @@ app.get('/volunteers', (req,res) => {
     res.send(results)
   })
 })
+
+// this query gets volunteer by taz. for example http://localhost:5000/volunteers/308786284
+// if no volunteer appear, it will return null
+app.get('/volunteers/:taz', (req,res) => {
+  let sql = `SELECT * FROM volunteers WHERE volunteers.taz = ${req.params.taz}`
+  let query = db.query(sql, (err, results) =>{
+    if(err) {
+      throw err
+    }
+    console.log('volunteer with id=1 is presented')
+    console.log(results)
+    res.send(results)
+  })
+})
+
 
 // FOR YOUR REFERENCE ONLY- HERES A READABLE EXAMPLE OF USER ON A JSON FORMAT
 // "group_name": "מסעדת ת\"א",
