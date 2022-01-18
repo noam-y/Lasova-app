@@ -52,7 +52,7 @@ app.get("/createdb", (req, res) => {
   });
 });
 
-app.get('/createVolunteer', (req,res) =>{
+app.get('/createvolunteer', (req,res) =>{
   
   // for reference- https://www.w3schools.com/sql/sql_datatypes.asp 
   let sql = 'CREATE TABLE volunteers(id int AUTO_INCREMENT, taz VARCHAR(10), first_name VARCHAR(15), last_name VARCHAR(25), police_certification BOOL, other_certications BOOL, cellphone VARCHAR(11), email VARCHAR(40), home_adress VARCHAR(100), volunteer_type INT, year_joined YEAR, gender int, PRIMARY KEY(id))'
@@ -64,6 +64,31 @@ app.get('/createVolunteer', (req,res) =>{
   })
 })
 
+
+// this function is used to illustrate how you can create a volunteer.
+app.get('/newvolunteer', (req,res) => {
+  let post = {taz: "308786284", first_name: "יוליה", last_name: "צמח", police_certification: "TRUE", other_certications: "TRUE", cellphone: "0547371762", email: "tapuz123@lasova.com", home_adress:"Yulia street apt 20", volunteer_type: "1", year_joined:"2015", gender:"2"}
+  let sql = 'INSERT INTO volunteers SET ?'
+  let query = db.query(sql, post, err =>{
+    if(err) {
+      throw err
+    }
+    res.send("Volunteer added!")
+  })
+})
+
+// this query gets all volunteers inside table of volunteers
+app.get('/volunteers', (req,res) => {
+  let sql = 'SELECT * FROM volunteers'
+  let query = db.query(sql, (err, results) =>{
+    if(err) {
+      throw err
+    }
+    console.log('volunteers extracted from sql server successfuly')
+    console.log(results)
+    res.send(results)
+  })
+})
 
 // FOR YOUR REFERENCE ONLY- HERES A READABLE EXAMPLE OF USER ON A JSON FORMAT
 // "group_name": "מסעדת ת\"א",
