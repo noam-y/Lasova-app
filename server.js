@@ -55,7 +55,7 @@ app.get("/createdb", (req, res) => {
 app.get('/createvolunteer', (req,res) =>{
   
   // for reference- https://www.w3schools.com/sql/sql_datatypes.asp 
-  let sql = 'CREATE TABLE volunteers(id int AUTO_INCREMENT, taz VARCHAR(10), first_name VARCHAR(15), last_name VARCHAR(25), police_certification BOOL, other_certications BOOL, cellphone VARCHAR(11), email VARCHAR(40), home_adress VARCHAR(100), volunteer_type INT, year_joined YEAR, gender int, PRIMARY KEY(id))'
+  let sql = 'CREATE TABLE volunteers(id int AUTO_INCREMENT, taz VARCHAR(10) NOT NULL UNIQUE, first_name VARCHAR(15), last_name VARCHAR(25), police_certification BOOL DEFAULT FALSE, other_certications BOOL DEFAULT FALSE, cellphone VARCHAR(11) NOT NULL UNIQUE, email VARCHAR(40) NOT NULL UNIQUE, home_adress VARCHAR(100), volunteer_type INT DEFAULT 0, year_joined YEAR DEFAULT 2022, gender int DEFAULT 0, PRIMARY KEY(id))'
   db.query(sql, err => {
     if(err){
       throw err
@@ -67,7 +67,7 @@ app.get('/createvolunteer', (req,res) =>{
 
 // this function is used to illustrate how you can create a volunteer.
 app.get('/newvolunteer', (req,res) => {
-  let post = {taz: "322186284", first_name: "אורן", last_name: "קורן", police_certification: "FALSE", other_certications: "TRUE", cellphone: "0547457862", email: "tap325123@lasova.com", home_adress:" oren street apt 20", volunteer_type: "1", year_joined:"2015", gender:"1"}
+  let post = {taz: "322186284", first_name: "אורן", last_name: "קורן", cellphone: "0547457862", email: "tap325123@lasova.com", home_adress:" oren street apt 20", volunteer_type: "1", year_joined:"2015", gender:"1"}
   let sql = 'INSERT INTO volunteers SET ?'
   let query = db.query(sql, post, err =>{
     if(err) {
@@ -85,7 +85,7 @@ app.get('/volunteers', (req,res) => {
       throw err
     }
     console.log('volunteers extracted from sql server successfuly')
-    console.log(results)
+    console.log(results) 
     res.send(results)
   })
 })
@@ -123,3 +123,23 @@ app.get('/volunteers/:taz', (req,res) => {
 app.listen('5000', () => {
   console.log('server started on port 5000')
 })
+
+
+// "CREATE TABLE Volunteers (
+// 	id INT NOT NULL AUTO_INCREMENT,
+// 	first_name VARCHAR(255) NOT NULL,
+// 	last_name VARCHAR(255) NOT NULL,
+// 	phone_number VARCHAR(10) NOT NULL UNIQUE,
+// 	email VARCHAR(25) NOT NULL UNIQUE,
+// 	gender INT(1) NOT NULL DEFAULT 0,
+// 	role INT NOT NULL DEFAULT 0,
+// 	police_certification BINARY NOT NULL DEFAULT FALSE,
+// 	other_certications BOOLEAN NOT NULL DEFAULT FALSE,
+// 	date_of_birth DATETIME,
+// 	city VARCHAR(255) NOT NULL,
+// 	home_adress VARCHAR(255) NOT NULL,
+// 	group_id INT,
+// 	role_id INT NOT NULL DEFAULT 0,
+// 	year_joined DATETIME(4) NOT NULL DEFAULT 2022,
+// 	PRIMARY KEY (id)
+// );"
