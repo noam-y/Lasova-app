@@ -52,7 +52,7 @@ app.get("/createdb", (req, res) => {
   });
 });
 
-app.get('/createvolunteer', (req,res) =>{
+app.get('/createvolunteertable', (req,res) =>{
   
   // for reference- https://www.w3schools.com/sql/sql_datatypes.asp 
   let sql = 'CREATE TABLE volunteers(id int AUTO_INCREMENT, taz VARCHAR(10) NOT NULL UNIQUE, first_name VARCHAR(15), last_name VARCHAR(25), police_certification BOOL DEFAULT FALSE, other_certications BOOL DEFAULT FALSE, cellphone VARCHAR(11) NOT NULL UNIQUE, email VARCHAR(40) NOT NULL UNIQUE, home_adress VARCHAR(100), volunteer_type INT DEFAULT 0, year_joined YEAR DEFAULT 2022, gender int DEFAULT 0, PRIMARY KEY(id))'
@@ -67,7 +67,7 @@ app.get('/createvolunteer', (req,res) =>{
 
 // this function is used to illustrate how you can create a volunteer.
 app.get('/newvolunteer', (req,res) => {
-  let post = {taz: "322186284", first_name: "אורן", last_name: "קורן", cellphone: "0547457862", email: "tap325123@lasova.com", home_adress:" oren street apt 20", volunteer_type: "1", year_joined:"2015", gender:"1"}
+  let post = {taz: "322476004", first_name: "סהר", last_name: "כהן", cellphone: "0524781006", email: "yulfs53@lasova.com", home_adress:"356 street apt 22", volunteer_type: "2", year_joined:"2018", gender:"1"}
   let sql = 'INSERT INTO volunteers SET ?'
   let query = db.query(sql, post, err =>{
     if(err) {
