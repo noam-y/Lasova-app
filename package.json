@@ -11,7 +11,8 @@
     "fs": "^0.0.1-security",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.15",
-    "react-redux": "^7.2.6"
+    "react-redux": "^7.2.6",
+    "react-router-dom" : "^8.1.2"
   },
   "name": "lasova-back",
   "version": "1.0.0",
