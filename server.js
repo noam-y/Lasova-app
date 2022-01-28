@@ -17,12 +17,12 @@ app.use(
 );
 
 // Settings up routes, can be found at './routes/'
-app.use("/users", require("./routes/users/get.js"));
+//app.use("/users", require("./routes/users/get.js"));
 
 // Starting the server on http://localhost:PORT
-app.listen(process.env.PORT, () =>
-  console.log(`Server Is Up!\nhttp://localhost:${process.env.PORT}`)
-);
+// app.listen(process.env.PORT, () =>
+//   console.log(`Server Is Up!\nhttp://localhost:${process.env.PORT}`)
+// );
 
 
 // this snippet of code was written to reset the database. it will show on LOCALHOST 5000.
@@ -67,7 +67,7 @@ app.get('/createvolunteertable', (req,res) =>{
 
 // this function is used to illustrate how you can create a volunteer.
 app.get('/newvolunteer', (req,res) => {
-  let post = {taz: "322476004", first_name: "סהר", last_name: "כהן", cellphone: "0524781006", email: "yulfs53@lasova.com", home_adress:"356 street apt 22", volunteer_type: "2", year_joined:"2018", gender:"1"}
+  let post = {taz: "75348665", first_name: "שיר", last_name: "סוויסה", cellphone: "05414785496", email: "sshirs@lasova.com", home_adress:"exd street apt 22", volunteer_type: "0", gender:"2"}
   let sql = 'INSERT INTO volunteers SET ?'
   let query = db.query(sql, post, err =>{
     if(err) {
