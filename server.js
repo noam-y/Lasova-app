@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const path = require(path);
 const fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
 const {
@@ -41,6 +42,16 @@ db.once('open', function () {
 
 app.use('/api/volunteer', require('./api/volunteer/volunteer.routes'));
 app.use('/api/group', require('./api/group/group.routes'));
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static('client/build'));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
 
 // Starting the server on http://localhost:PORT
 app.listen(process.env.PORT, () =>
