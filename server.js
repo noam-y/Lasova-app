@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const path = require(path);
+const path = require('path');
 const fileUpload = require('express-fileupload');
 const mongoose = require('mongoose');
 const {
@@ -32,7 +32,7 @@ app.use(fileUpload());
 // connect to db
 mongoose.connect(dbURI, {
   dbName,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
