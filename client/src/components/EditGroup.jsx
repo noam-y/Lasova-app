@@ -2,9 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { saveGroup } from "../store/actions/groupActions";
-// import { saveVolunteer } from "../store/actions/volunteerActions";
-// import TextareaAutosize from "@mui/material/TextareaAutosize";
-// import Button from "@mui/material/Button";
+import TextareaAutosize from "@mui/material/TextareaAutosize";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
@@ -206,7 +204,7 @@ function EditGroupModal({ open, setOpen, group }) {
                         <h2 className='title'>אחר</h2>
                         <div className='new_group_form-block'>
                             <label htmlFor='comments'>
-                                <textarea
+                                <TextareaAutosize
                                     className='input'
                                     placeholder='הערות נוספות'
                                     type='text'
