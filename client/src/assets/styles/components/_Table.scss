@@ -64,6 +64,10 @@
     .MuiDataGrid-row {
       width: 100%;
       cursor: pointer;
+      &:hover {
+        background-color: rgba(4, 83, 173, 0.795);
+        color: #ffff;
+      }
 
       * {
         min-width: unset !important;
@@ -97,6 +101,9 @@
         display: none;
       }
     }
+  }
+  .MuiDataGrid-row:nth-child(2n) {
+    background-color: rgba(0, 0, 0, 0.144);
   }
 }
 .filter-menu {

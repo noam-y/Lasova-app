@@ -2,11 +2,13 @@ const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
 const Volunteer = new Schema({
-  groupName: { type: String, trim: true, default: '' },
+  volunteeringProgram: { type: String, trim: true, default: '' },
   firstName: { type: String, trim: true, default: '' },
   lastName: { type: String, trim: true, default: '' },
   taz: { type: String, trim: true, default: '' },
   birth: { type: Date, default: Date.now },
+  startDate: { type: Date, default: Date.now },
+  endDate: { type: Date, default: Date.now },
   gender: { type: String, trim: true, default: '' },
   policeCertification: { type: Boolean, default: false },
   otherDocuments: { type: Boolean, default: false },
@@ -18,7 +20,7 @@ const Volunteer = new Schema({
   weekdayAvailability: [{ type: String, default: '' }],
   status: { type: String, trim: true, default: '' },
   reportedHours: { type: Number, default: 0 },
-  approvedHours: { type: Number, default: 0 },
+  approvedHours: { type: Number, default: 0 }
 });
 
 module.exports = model('Volunteer', Volunteer);

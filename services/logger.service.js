@@ -6,9 +6,9 @@ if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir);
 }
 
-//define the time format
+// define the time format
 function getTime() {
-  let now = new Date();
+  const now = new Date();
   return now.toLocaleString();
 }
 
@@ -18,11 +18,9 @@ function isError(e) {
 
 function doLog(level, ...args) {
   // console.log('LOGGER:', args);
-  const strs = args.map((arg) =>
-    typeof arg === 'string' || isError(arg) ? arg : JSON.stringify(arg)
-  );
+  const strs = args.map((arg) => (typeof arg === 'string' || isError(arg) ? arg : JSON.stringify(arg)));
 
-  var line = strs.join(' | ');
+  let line = strs.join(' | ');
   const store = asyncLocalStorage.getStore();
   const sessionId = store?.sessionId;
   const sid = sessionId ? `(sid: ${sessionId})` : '';
@@ -44,5 +42,5 @@ module.exports = {
   },
   error(...args) {
     doLog('ERROR', ...args);
-  },
+  }
 };

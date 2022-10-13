@@ -23,8 +23,9 @@ async function removeGroup(req, res) {
 async function removeManyGroups(req, res) {
   try {
     const { ids } = req.query;
-    if (!ids || !ids.length)
+    if (!ids || !ids.length) {
       return res.send('Please Send desired groups to delete');
+    }
     const handledIds = Array.isArray(ids) ? ids.split(',') : ids;
     const updatedGroups = await remove(handledIds);
     res.send(updatedGroups);
@@ -70,5 +71,5 @@ module.exports = {
   removeManyGroups,
   updateGroup,
   addGroup,
-  getGroupById,
+  getGroupById
 };

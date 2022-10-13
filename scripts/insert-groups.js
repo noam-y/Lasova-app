@@ -132,7 +132,7 @@ const groupsToInsert = [
 ];
 
 const mongoose = require('mongoose');
-const { dbURI, dbName } = require('../config/index.config');
+const { dbURI, dbName } = require('../env/index.config');
 const Group = require('../api/group/group.schema');
 
 mongoose.connect(dbURI, {
@@ -141,8 +141,8 @@ mongoose.connect(dbURI, {
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
 db.once('open', async function () {
-    const groups = await Group.find()
-    console.log('groups: ', groups)
+  const groups = await Group.find();
+  console.log('groups: ', groups);
 });
 
 console.log('testing');

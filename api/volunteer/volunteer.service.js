@@ -4,12 +4,13 @@ const Volunteer = require('./volunteer.schema');
  * Currently acceps isDefault and doReset as params,
  * doReset - flag that indicates whether should restore data to initial value
  * isDefault - flag that indicates whether should use initial data */
-async function query({} = {}) {
+async function query(filter = {}) {
   try {
-    const volunteers = await Volunteer.find();
+    const criteria = _buildVolunteerQueryFilter(filter);
+    const volunteers = await Volunteer.find(criteria);
     return volunteers;
   } catch (err) {
-    logger.error(`failed to fetch volunteers` + err);
+    logger.error('failed to fetch volunteers' + err);
     throw err;
   }
 }
@@ -19,7 +20,7 @@ async function getById(volunteerId) {
     const volunteer = await Volunteer.findById(volunteerId);
     return volunteer;
   } catch (err) {
-    logger.error(`failed to fetch voluntter` + err);
+    logger.error('failed to fetch voluntter' + err);
     throw err;
   }
 }
@@ -32,19 +33,15 @@ async function add(volunteer) {
     });
     return volunteer;
   } catch (err) {
-    logger.error(`couldn't add volunteer `, err);
+    logger.error("couldn't add volunteer ", err);
     throw err;
   }
 }
-/**
- * this function gets an array of volunteerIds
- * and removes the corresponding volunteers from the volunteer collection.
- * then returns the updated collection to controller.
- *   */
+
 async function remove(volunteerIds) {
   try {
     const res = await Volunteer.deleteMany({
-      _id: { $in: volunteerIds },
+      _id: { $in: volunteerIds }
     });
     return res;
   } catch (err) {
@@ -62,10 +59,27 @@ async function update(volunteer) {
   }
 }
 
+const _buildVolunteerQueryFilter = (query) => {
+  const filter = {};
+  Object.keys(query).forEach((currQueryKey) => {
+    switch (currQueryKey) {
+      case 'volunteeringPrograms':
+        filter.volunteeringProgram = {
+          $in: query[currQueryKey]
+        };
+        break;
+      default:
+        filter[currQueryKey] = query[currQueryKey];
+        break;
+    }
+  });
+  return filter;
+};
+
 module.exports = {
   query,
   remove,
   update,
   getById,
-  add,
+  add
 };

@@ -1,10 +1,15 @@
 const logger = require('../../services/logger.service');
 const { query, remove, update, getById, add } = require('./volunteer.service');
 const googleDriveService = require('../../services/google-drive.service');
+const { UserTypes } = require('../../lib/consts/UserType.enum');
+const { managerProgramsObjectMap } = require('../../lib/manager-program-map');
 
 async function getVolunteers(req, res) {
   try {
     const queryOptions = req.query;
+    if (req.user.userType === UserTypes.ProgramManager) {
+      queryOptions.volunteeringPrograms = managerProgramsObjectMap[req.user.email];
+    }
     const volunteers = await query(queryOptions);
     res.send(volunteers);
   } catch (err) {
@@ -34,24 +39,24 @@ async function updateVolunteer(req, res) {
 
 async function addVolunteer(req, res) {
   try {
-    let { body: volunteer, files } = req;
+    let {
+      body: { document: volunteer },
+      files
+    } = req;
     const contentType = req.headers['content-type'];
 
     if (contentType?.startsWith('multipart/form-data')) {
-      volunteer = JSON.parse(body.document);
+      volunteer = JSON.parse(volunteer);
     }
 
-    if (!!files) {
-      await googleDriveService.createInitialVolunteerFolder(
-        volunteer.firstName + ' ' + volunteer.lastName,
-        files
-      );
+    if (files) {
+      await googleDriveService.createInitialVolunteerFolder(volunteer.firstName + ' ' + volunteer.lastName, files);
     }
 
     const newVolunteer = await add(volunteer);
     res.send(newVolunteer);
   } catch (err) {
-    logger.error(`err while trying to add volunteer`, err);
+    logger.error('err while trying to add volunteer', err);
     res.status(500).send(err);
   }
 }
@@ -71,5 +76,5 @@ module.exports = {
   removeVolunteers,
   updateVolunteer,
   addVolunteer,
-  getVolunteerById,
+  getVolunteerById
 };

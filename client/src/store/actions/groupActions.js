@@ -2,16 +2,6 @@
 import { storageService } from '../../services/async-storage.service';
 import { groupService } from '../../services/group-service';
 const STORAGE_KEY = 'group';
-// TEMPORARY IIFE to load volunteers from mock_data.json to localStorage
-(function loadMockToStorage() {
-  if (!JSON.parse(localStorage.getItem(STORAGE_KEY))) {
-    const mockData = require('../../services/group-mock-data.json');
-    localStorage[STORAGE_KEY] = JSON.stringify(mockData);
-  }
-})();
-
-// serverService will be used to make requests to server:
-// import { serverService } from "../../services/client-server.service"
 
 /*******************************************************************************************/
 
@@ -30,9 +20,11 @@ export function loadGroups() {
 export function searchGroups(searchText) {
   return (dispatch, getState) => {
     const { groups } = getState().groupReducer;
-    let filteredGroups= groups.filter((group) => {
+    let filteredGroups = groups.filter((group) => {
       return (
-        group.groupName.toLowerCase().includes(searchText.toLowerCase())
+        group.type.toLowerCase().includes(searchText.toLowerCase()) ||
+        group.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        group.contactName.toLowerCase().includes(searchText.toLowerCase())
       );
     });
     dispatch({ type: 'SEARCH_GROUPS', filteredGroups });

@@ -1,12 +1,12 @@
 const logger = require('../../services/logger.service');
 const Group = require('./group.schema');
 
-async function query({ } = {}) {
+async function query({ volunteeringPrograms } = {}) {
   try {
     const groups = await Group.find();
     return groups;
   } catch (err) {
-    logger.error(`failed to fetch groups` + err);
+    logger.error('failed to fetch groups' + err);
     throw err;
   }
 }
@@ -16,7 +16,7 @@ async function getById(groupId) {
     const group = await Group.findById(groupId);
     return group;
   } catch (err) {
-    logger.error(`failed to fetch volunteer ` + err);
+    logger.error('failed to fetch volunteer ' + err);
     throw err;
   }
 }
@@ -29,7 +29,7 @@ async function add(group) {
     });
     return group;
   } catch (err) {
-    logger.error(`err while trying to add group `, err);
+    logger.error('err while trying to add group ', err);
     throw err;
   }
 }
@@ -45,16 +45,13 @@ async function remove(groupIds) {
       res = await Group.deleteOne({ _id: groupIds });
     } else {
       res = await Group.deleteMany({
-        _id: { $in: groupIds },
+        _id: { $in: groupIds }
       });
     }
 
     return res;
   } catch (err) {
-    logger.error(
-      `error trying to delete groups with ids: ${groupIds.split(',')}`,
-      err
-    );
+    logger.error(`error trying to delete groups with ids: ${groupIds.split(',')}`, err);
   }
 }
 
@@ -73,5 +70,5 @@ module.exports = {
   remove,
   update,
   getById,
-  add,
+  add
 };

@@ -1,4 +1,6 @@
-.home, .groups, .base-page {
+.home,
+.groups,
+.base-page {
   .table-header {
     margin-inline-end: rem(45px);
     margin-bottom: vh(20px);
@@ -86,8 +88,7 @@
   }
 }
 
-
-.base-page{
+.base-page {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 80px);
