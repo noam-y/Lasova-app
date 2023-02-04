@@ -1,14 +1,18 @@
 const logger = require('../../services/logger.service');
-const { query, remove, update, getById, add } = require('./volunteer.service');
+const { query, remove, adminUpdate, volunteerUpdate, getById, add } = require('./volunteer.service');
 const googleDriveService = require('../../services/google-drive.service');
 const { UserTypes } = require('../../lib/consts/UserType.enum');
 const { managerProgramsObjectMap } = require('../../lib/manager-program-map');
+const jwt = require('jsonwebtoken');
+const authenticate = require('../../middlewares/authentication.middleware');
 
 async function getVolunteers(req, res) {
   try {
     const queryOptions = req.query;
+
+    console.log('req.query: ', req.query);
     if (req.user.userType === UserTypes.ProgramManager) {
-      queryOptions.volunteeringPrograms = managerProgramsObjectMap[req.user.email];
+      queryOptions.volunteeringPrograms = req.user.associatedPrograms;
     }
     const volunteers = await query(queryOptions);
     res.send(volunteers);
@@ -27,10 +31,24 @@ async function removeVolunteers(req, res) {
   }
 }
 
-async function updateVolunteer(req, res) {
+async function volunteerUpdateVolunteer(req, res) {
   try {
     const volunteer = req.body;
-    const updatedVolunteer = await update(volunteer);
+    authenticate.authenticateToken(req, res, () => console.log('right user'));
+    const updatedVolunteer = await volunteerUpdate(volunteer, req.user);
+    res.send(updatedVolunteer);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+}
+
+async function adminUpdateVolunteer(req, res) {
+  console.log('enter funct');
+  try {
+    const volunteer = req.body;
+
+    authenticate.authenticateToken(req, res, () => console.log('right user ->adminUpdateVoluntee'));
+    const updatedVolunteer = await adminUpdate(volunteer, req.user);
     res.send(updatedVolunteer);
   } catch (err) {
     res.status(500).send(err);
@@ -38,6 +56,10 @@ async function updateVolunteer(req, res) {
 }
 
 async function addVolunteer(req, res) {
+  console.log('addVolunteer');
+  console.log('req');
+  console.log(req.body);
+
   try {
     let {
       body: { document: volunteer },
@@ -62,6 +84,7 @@ async function addVolunteer(req, res) {
 }
 
 async function getVolunteerById(req, res) {
+  console.log('getVolunteerById');
   try {
     const { volunteerId } = req.params;
     const volunteer = await getById(volunteerId);
@@ -74,7 +97,8 @@ async function getVolunteerById(req, res) {
 module.exports = {
   getVolunteers,
   removeVolunteers,
-  updateVolunteer,
+  adminUpdateVolunteer,
+  volunteerUpdateVolunteer,
   addVolunteer,
   getVolunteerById
 };

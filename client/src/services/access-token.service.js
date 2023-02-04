@@ -3,15 +3,17 @@ import { storageService } from './storage.service';
 const TOKEN_STORAGE_KEY = `ACCESS_TOKEN`;
 
 function getToken() {
+  // console.log(storageService.getItem(TOKEN_STORAGE_KEY));
   return storageService.getItem(TOKEN_STORAGE_KEY);
 }
 
 function setToken(token) {
-  storageService.setItem(TOKEN_STORAGE_KEY, token);
+  // console.log(storageService.getItem(TOKEN_STORAGE_KEY));
+  return storageService.setItem(TOKEN_STORAGE_KEY, token);
 }
 
 function removeToken() {
-  storageService.removeItem(TOKEN_STORAGE_KEY);
+  return storageService.removeItem(TOKEN_STORAGE_KEY);
 }
 
 export const accessTokenService = {

@@ -17,12 +17,14 @@
     "mongoose": "^6.3.5",
     "nodemon": "^2.0.15",
     "pg": "^8.7.3",
-    "pgtools": "^0.3.2"
+    "pgtools": "^0.3.2",
+    "react-icons": "^4.7.1"
   },
   "name": "lasova-back",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build:client": "npm --prefix ./client install && npm --prefix ./client run build:prod",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "testEnv": "nodemon server.js",

@@ -1,8 +1,11 @@
 import { useLocation, Link } from 'react-router-dom';
 import Logo from '../assets/imgs/logo.png';
 import { ReactComponent as SettingsIcon } from '../assets/imgs/icons/settings-icon.svg';
+import Header from './Header';
+import { useSelector } from 'react-redux';
 
 const Sidebar = () => {
+  const { isAuthenticated, user } = useSelector((state) => state.authReducer);
   const currLocation = useLocation().pathname;
   console.log('currLocation:', currLocation);
 
@@ -15,7 +18,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside>
+    <aside className="sidebar">
       <img src={Logo} alt="laSova" className="logo" />
       <nav className="flex column">
         {links.map((link) => (
@@ -32,6 +35,7 @@ const Sidebar = () => {
         <SettingsIcon />
         <span>הגדרות</span>
       </Link> */}
+      <Header /> {/*This is not a header. */}
     </aside>
   );
 };

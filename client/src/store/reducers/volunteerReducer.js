@@ -1,6 +1,7 @@
 const initialState = {
   volunteers: null,
   volunteersToShow: null,
+  volunteer: null,
   // filters: {
   /*
       search: '',
@@ -33,9 +34,10 @@ export function volunteerReducer(state = initialState, action) {
     case 'UPDATE_VOLUNTEER':
       return {
         ...state,
-        volunteers: state.volunteers.map((volunteer) =>
-          volunteer._id === action.volunteer._id ? action.volunteer : volunteer
-        ),
+        //volunteers: state.volunteers.map((volunteer) =>
+          //volunteer._id === action.volunteer._id ? action.volunteer : volunteer
+        //),
+        volunteer: action.volunteer, //Naama
       };
     case 'SEARCH_VOLUNTEERS':
       return {
@@ -48,6 +50,13 @@ export function volunteerReducer(state = initialState, action) {
         ...state,
         volunteersToShow: action.filteredVolunteers,
       };
+    
+      //naama
+    case 'LOAD_VOLUNTEER':
+        return {
+          volunteer: action.volunteerData
+        };
+
     default:
       return state;
   }

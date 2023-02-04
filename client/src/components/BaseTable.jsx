@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbarContainer, GridToolbarDensitySelector } from '@mui/x-data-grid';
 import MenuItem from '@mui/material/MenuItem';
 
 import ExportCsvBtn from './ExportCsvBtn';
@@ -18,7 +18,7 @@ const BaseTable = ({
   dropdownPosition,
   filterOptions,
   onSetFilter,
-  filter,
+  filter
 }) => {
   const [rows, setRows] = useState(entities || []);
 
@@ -47,7 +47,7 @@ const BaseTable = ({
         <div
           className="filter-menu"
           style={{
-            ...dropdownPosition,
+            ...dropdownPosition
           }}
         >
           {filterOptions[activeFilter].map((o) => (
@@ -65,15 +65,25 @@ const BaseTable = ({
           components={{
             Toolbar: () => <ExportCsvBtn name={exportFileName} csvBtnRef={csvBtnRef} />,
             LoadingOverlay: () => <TableLoader />,
-            NoRowsOverlay: () => <CustomNoRowsOverlay />,
+            NoRowsOverlay: () => <CustomNoRowsOverlay />
           }}
           loading={!rows}
-          hideFooter
           checkboxSelection
-          disableColumnMenu
           disableSelectionOnClick
           onRowDoubleClick={(ev) => {
             onEntityClick(ev.row);
+          }}
+          pageSize={10}
+          rowsPerPageOptions={[10]}
+          getRowHeight={({ model, densityFactor }) => {
+            //Naama - for actions columns
+            if (!model.hours || !model.hours.length) {
+              return null;
+            }
+            if (!model.hours[0].verified || model.hours[0].verified === 'false') {
+              return 200 * densityFactor;
+            }
+            return null;
           }}
         />
       </section>

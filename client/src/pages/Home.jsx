@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // import { DebounceInput } from "react-debounce-input";
-import { loadVolunteers, searchVolunteers } from '../store/actions/volunteerActions';
+import {
+  loadVolunteers,
+  searchVolunteers,
+  filterVolunteersByStatus,
+  saveVolunteer
+} from '../store/actions/volunteerActions';
 import NewVolunteerModal from '../components/NewVolunteerModal';
 import ProfileVolunteerModal from '../components/ProfileVolunteerModal';
 
@@ -18,27 +23,36 @@ import { ReactComponent as Inactive } from '../assets/imgs/icons/status/inactive
 import BasePage from '../pages/BasePage';
 import BaseTable from '../components/BaseTable';
 import FilterableHeaderCell from '../components/FilterableHeaderCell';
+import StatusTabs from '../components/StatusTabs';
+import { Navigate, useNavigate } from 'react-router-dom';
+import Approve from '../components/Approve';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 
+import { BsFillCheckSquareFill } from 'react-icons/bs';
 // import { ReactComponent as ClearIcon } from '../assets/imgs/icons/close-icon.svg';
 
 const Home = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { volunteers, volunteersToShow } = useSelector((state) => state.volunteerReducer);
+  const { user } = useSelector((state) => state.authReducer);
+  const { volunteer } = useSelector((state) => state.volunteerReducer);
   const exportRef = useRef(null);
   const csvBtnRef = useRef(null);
-
   const [isNewVolModalOpen, setNewVolModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
-
   const [volunteerProfileToShow, setVolunteerProfileToShow] = useState({});
-
   const [dropdownPosition, setDropdownPosition] = useState(null);
+  const [editVolunteer, setEditVolunteer] = useState({
+    ...volunteer
+  });
   const [activeFilter, setActiveFilter] = useState('');
   const [filter, setFilter] = useState({
     status: '',
     volunteeringProgram: '',
     volunteerType: ''
   });
+  console.log(user);
   const filterOptions = useMemo(() => {
     if (!volunteers) return {};
     const retval = volunteers.reduce((acc, curr) => {
@@ -62,7 +76,10 @@ const Home = () => {
     return retval;
   }
 
+  const [isEdited,setIsEdited]=useState(false);
+  
   const openProfileModal = (volunteer) => {
+    console.log(volunteer);
     setProfileModalOpen(true);
     setVolunteerProfileToShow(volunteer);
   };
@@ -93,7 +110,6 @@ const Home = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const statuses = [
     { type: 'active', label: 'פעיל', icon: <Active /> },
-    { type: 'new', label: 'חדש', icon: <NewLead /> },
     { type: 'standby', label: 'מושהה', icon: <Standby /> },
     { type: 'inactive', label: 'לא פעיל', icon: <Inactive /> }
   ];
@@ -101,57 +117,57 @@ const Home = () => {
   const columns = useMemo(
     () => [
       {
-        field: 'status',
-        description: 'סטטוס',
-        headerName: 'סטטוס',
-        renderHeader: () => <FilterableHeaderCell {...getFilterableHeaderCellProps('status', 'סטטוס')} />,
-        valueFormatter: ({ value }) => statuses.find((status) => status.type === value)?.label || statuses[2].type,
-        renderCell: (params) => statuses.find((status) => status.type === params.row.status)?.icon || <Standby />
-      },
-      {
         field: 'firstName',
         headerName: 'שם פרטי',
         description: 'שם פרטי',
-        valueGetter: (params) => params.row.firstName || ''
+        flex: 1,
+        valueGetter: (params) => `${params.row.firstName}` || '',
+        renderCell: (params) => (
+          <div className="name-status">
+            {statuses.find((status) => status.type === params.row.status)?.icon || <Standby />}
+            {params.row.firstName}
+          </div>
+        )
       },
       {
         field: 'lastName',
         headerName: 'שם משפחה',
         description: 'שם משפחה',
+        flex: 1,
         valueGetter: (params) => params.row.lastName || ''
       },
       {
         field: 'taz',
-        headerName: 'תעודת זהות',
+        headerName: 'ת.ז',
+        flex: 1,
         valueGetter: (params) => params.row.taz || '-'
       },
       {
-        field: 'volunteerType',
-        headerName: 'מסגרת התנדבות',
-        description: 'מסגרת התנדבות',
-        renderHeader: () => (
-          <FilterableHeaderCell {...getFilterableHeaderCellProps('volunteerType', 'מסגרת התנדבות')} />
-        ),
-        valueGetter: (params) => params.row.volunteerType || ''
+        field: 'volunteeringProgram.name',
+        headerName: 'מסגרת',
+        description: 'מסגרת',
+        flex: 1,
+        renderHeader: () => <FilterableHeaderCell {...getFilterableHeaderCellProps('volunteeringProgram', 'מסגרת')} />,
+        valueGetter: (params) => params.row.volunteeringProgram?.name || ''
       },
       {
-        field: 'volunteeringProgram',
+        field: 'volunteerType',
         headerName: 'מסגרת מפנה',
         description: 'מסגרת מפנה',
-        renderHeader: () => (
-          <FilterableHeaderCell {...getFilterableHeaderCellProps('volunteeringProgram', 'מסגרת מפנה')} />
-        ),
+        flex: 1,
+        renderHeader: () => <FilterableHeaderCell {...getFilterableHeaderCellProps('volunteerType', 'תכנית')} />,
         valueGetter: (params) => {
           if (params.row.scholarship) {
             return `מלגה, ${params.row.scholarship}`;
           }
-          return params.row.volunteeringProgram || '';
+          return params.row.volunteerType || '';
         }
       },
       {
         field: 'volunteerHours',
         headerName: 'שעות מדווחות',
         description: 'שעות מדווחות',
+        flex: 0.5,
         sortable: false,
         valueFormatter: ({ _id }) => {
           const volunteer = volunteers?.find((volunteer) => volunteer._id === _id);
@@ -163,28 +179,75 @@ const Home = () => {
             <span className="reported-hours">{params.row.reportedHours || 0}</span>
           </>
         )
+      },
+      /*{
+        field: 'volunteerApproveHours',
+        headerName: "דיווח שעות אחרון לאישור:",
+        description: 'שעות מדווחות',
+        flex:2,
+        sortable: false,
+        renderCell: (params) => (
+          <>
+            <Approve row={params.row} />
+          </>
+        )
+      },*/
+      {
+        field: 'actions',
+        type: 'actions',
+        flex: 2,
+        headerName: 'דיווח שעות אחרון לאישור:',
+        getActions: (params) => [<Approve row={params.row} approveHours={approveHours} />]
       }
-      // {
-      //     field: 'actions',
-      //     type: 'actions',
-      //     getActions: params => [
-      //         <GridActionsCellItem icon={<Edit />} onClick={...} label="Edit" />,
-      //         <GridActionsCellItem icon={<DeleteIcon />} onClick={onRemoveVolunteer(params.row.volunteerId)} label="Delete" />,
-      //     ]
-      // }
     ],
     [getFilterableHeaderCellProps, statuses, volunteers]
   );
+  if (!user) {
+    navigate('/login');
+  }
+  function setStatusFilter(status) {
+    alert(`status has changed to: ${status}`);
+  }
+
+  function approveHours(row) {
+    //naama
+
+    let hours = row.hours;
+    if (!hours || !hours.length) return;
+    if (hours[0].verified === true || hours[0].verified === 'true') return;
+    let lastHours = hours.shift();
+    let hoursApproval = { ...lastHours, verified: true };
+    let volHours = [hoursApproval, ...hours];
+
+    row.hours = volHours;
+    let currVol = { ...row, hours: volHours };
+    console.log(currVol, '/n', lastHours, '/n', hoursApproval);
+    setIsEdited(true);
+    setEditVolunteer(currVol);
+  }
+
+  useEffect(() => {
+    if (isEdited) {
+      dispatch(saveVolunteer(editVolunteer, user));
+      console.log(editVolunteer._id);
+      setIsEdited(false);
+    }
+  }, [editVolunteer]);
 
   return (
     <BasePage
       title="טבלת מתנדבים"
       doSearch={(searchWord) => {
-        dispatch(searchVolunteers(searchWord));
+        dispatch(searchVolunteers(searchWord, undefined));
       }}
       doExport={() => exportRef.current()}
       onAdd={() => setNewVolModalOpen(true)}
     >
+      <StatusTabs
+        setStatusFilter={(status) => {
+          dispatch(searchVolunteers(undefined, status));
+        }}
+      />
       <BaseTable
         entities={volunteersToShow}
         columns={columns}
@@ -198,12 +261,6 @@ const Home = () => {
         filter={filter}
         onEntityClick={openProfileModal}
       />
-      {/* <VolunteersTable // Probably need to be deleted
-        volunteers={volunteersToShow}
-        onExport={onExport}
-        openProfileModal={openProfileModal}
-      /> */}
-      {/* <Footer /> */}
       {isNewVolModalOpen && <NewVolunteerModal open={isNewVolModalOpen} setOpen={setNewVolModalOpen} />}
       {isProfileModalOpen && (
         <ProfileVolunteerModal
